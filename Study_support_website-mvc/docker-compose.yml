@@ -1,0 +1,46 @@
+services:
+  php:
+    build: .
+    ports:
+      - 8000:80
+    volumes:
+      - ./src:/var/www/html
+    depends_on:
+      - mysql
+    environment:
+      MYSQL_HOST: mysql
+      MYSQL_USER: buns
+      MYSQL_PASSWORD: buns
+      MYSQL_DB: study_support
+
+    command: >
+      bash -c " a2enmod rewrite
+      && apache2-foreground"
+
+  mysql:
+    image: mysql:8.0.32
+    ports:
+      - 3306:3306
+    volumes:
+      - mysql-data:/var/lib/mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: study_support
+      MYSQL_USER: buns
+      MYSQL_PASSWORD: buns
+    restart: always
+
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin:latest
+    ports:
+      - 8081:80
+    environment:
+      PMA_HOST: mysql
+      PMA_USER: buns
+      PMA_PASSWORD: buns
+      PMA_ARBITRARY: 1
+    restart: always
+
+volumes:
+  mysql-data:
+    name: mysql-data
